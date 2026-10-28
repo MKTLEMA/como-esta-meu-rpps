@@ -1,0 +1,40 @@
+name: Atualizar dados todo dia
+on:
+  schedule:
+    - cron: "0 9 * * *"   # 09h UTC = 06h de Brasília
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install openpyxl
+      - name: Atualizar dados do ISP e vigiar o Manual
+        id: dados
+        continue-on-error: true
+        run: python atualizar_dados.py --html index.html
+      - name: Publicar se houve mudança (ou manter o repositório ativo)
+        run: |
+          git config user.name "LEMA Edu (automático)"
+          git config user.email "actions@users.noreply.github.com"
+          rm -f ALERTA-NORMA.txt
+          git add index.html
+          if ! git diff --cached --quiet; then
+            git commit -m "Dados do ISP atualizados automaticamente"
+            git push
+          elif [ -n "$(git log -1 --since='40 days ago' --format=%H)" ]; then
+            echo "Sem mudanças."
+          else
+            git commit --allow-empty -m "Mantém o agendamento ativo"
+            git push
+          fi
+      - name: Avisar se saiu nova versão do Manual
+        if: steps.dados.outcome == 'failure'
+        run: |
+          echo "A atualização falhou ou saiu nova versão do Manual de Certificação. Veja o log do passo anterior."
+          exit 1

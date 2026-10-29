@@ -157,7 +157,7 @@ const REGRAS = {
 
 // E-book "Tira dúvidas". ativo:false esconde o botão. Ligar só depois de corrigir/aprovar o PDF
 // (o item "Certificação pelo ISP até 14/04/2027" do PDF não foi confirmado nas fontes oficiais).
-const EBOOK = { ativo: false, href: "ebook.pdf", arquivo: "Tira-duvidas-Certificacao-RPPS-LEMA-Edu-2026.pdf" };
+const EBOOK = { ativo: true, href: "ebook.pdf", arquivo: "Tira-duvidas-Certificacao-RPPS-LEMA-Edu-2026.pdf" };
 
 const NIVEIS = {
   basica: "Certificação Básica",
@@ -451,10 +451,9 @@ const FAQ = [
         </details>
 
         <div class="ajuda-botoes">
-          ${typeof EBOOK !== "undefined" && EBOOK.ativo ? `<a class="botao-2" href="${EBOOK.href}" download="${EBOOK.arquivo}">Baixe e-book sobre dúvidas</a>` : ""}
-          <button type="button" class="botao-2" id="btn-faq" aria-expanded="false" aria-controls="faq">Perguntas e respostas (FAQ)</button>
+          ${typeof EBOOK !== "undefined" && EBOOK.ativo ? `<a class="botao-2" href="${EBOOK.href}" download="${EBOOK.arquivo}">Baixe o e-book Tira-dúvidas Certificação RPPS</a>` : ""}
         </div>
-        <section id="faq" class="faq" hidden aria-label="Perguntas frequentes sobre certificação">
+        <section id="faq" class="faq" aria-label="Perguntas frequentes sobre certificação">
           <h3>Perguntas frequentes</h3>
           ${FAQ.map((x) => `<details><summary>${x.p}</summary><div class="resp">${x.r}</div></details>`).join("")}
         </section>
@@ -470,13 +469,6 @@ const FAQ = [
       const txt = inp.value.replace(/\./g, "").replace(",", ".").replace(/[^\d.]/g, "");
       renderizar(txt === "" ? undefined : parseFloat(txt));
       const novo = $("recursos"); if (novo) novo.focus();
-    });
-    $("btn-faq").addEventListener("click", () => {
-      const faq = $("faq"), abrir = faq.hidden;
-      faq.hidden = !abrir;
-      $("btn-faq").setAttribute("aria-expanded", String(abrir));
-      $("btn-faq").textContent = abrir ? "Ocultar perguntas e respostas" : "Perguntas e respostas (FAQ)";
-      if (abrir) faq.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }
 
